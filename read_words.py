@@ -5,5 +5,5 @@ def read_words(file):
     Output: words: list
     '''
     return list()
-    pass
+
 
