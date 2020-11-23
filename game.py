@@ -2,14 +2,15 @@ from read_words import read_words
 from enum import Enum
 
 class GameStatus(Enum):
-    GAME_START = -1
-    GAME_INCOMPLETE = 0
-    GAME_WON = 1
-    GAME_INCORRECT_GUESS = 2
-    GAME_REPEAT_GUESS = 3
-    GAME_INVALID_GUESS = 4
-    GAME_LOST = 5
-    GAME_OUT_OF_GUESSES = 6
+    GAME_SERVER_OVERLOAD = 0
+    GAME_START = 1
+    GAME_INCOMPLETE = 2
+    GAME_WON = 3
+    GAME_INCORRECT_GUESS = 4
+    GAME_REPEAT_GUESS = 5
+    GAME_INVALID_GUESS = 6
+    GAME_LOST = 7
+    GAME_OUT_OF_GUESSES = 8
 
 class GameState:
     def __init__(self, words_file, word_num=0):
@@ -83,11 +84,7 @@ class Game:
                 break 
             elif(res == GameStatus.GAME_OUT_OF_GUESSES):
                 print("You ran out of guesses :(")
-                break
-
-
-
-        
+                break       
 
     
 

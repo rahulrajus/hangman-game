@@ -6,29 +6,33 @@ import struct
 import threading
 import sys 
 
+def send_client_msg(conn, msg):
+   flag = chr(len(msg))
+   print(flag+msg)
+   send_msg = bytes(flag+msg, encoding='utf-8')
+   conn.sendall(send_msg) 
+
 def send_client(conn, game_state):
    send_msg = ""
-   print("sent")
    status = game_state.status
    if(status == GameStatus.GAME_OUT_OF_GUESSES):
       msg = "You Lost!"
       flag = chr(len(msg))
       send_msg = bytes(flag+msg, encoding='utf-8')
-      print("out",send_msg)
    elif(status == GameStatus.GAME_WON):
       msg = "You Won!"
       flag = chr(len(msg))
-      print(flag+msg)
       send_msg = bytes(flag+msg, encoding='utf-8')
-      print("won",send_msg)
+   elif(status == GameStatus.GAME_SERVER_OVERLOAD):
+      msg = "Server Overload!"
+      flag = chr(len(msg))
+      send_msg = bytes(flag+msg, encoding='utf-8')
    else:
-      print('here2')
       word_state = ''.join(game_state.state)
       incorrect_guesses = ''.join(game_state.incorrect_guesses)
       word_len = chr(len(word_state))
       num_incorrect = chr(len(incorrect_guesses))
       send_msg = bytes(chr(0) + word_len + num_incorrect + word_state + incorrect_guesses, encoding='utf-8')
-   print(send_msg)
    conn.sendall(send_msg)   
 
 games = dict()
@@ -41,53 +45,26 @@ s.listen(5)                 # Now wait for client connection.
 
 def handleClient(conn, addr):
    while True:
-         # print('Got connection from', addr)
          d = conn.recv(1)
          if(d == b''):
             conn.close()
             break
-         print(d)
          data_len = ord(d)
-         print(data_len)
          if(data_len > 0):
             guess = conn.recv(data_len).decode('utf-8')
-            print("GUESS",guess)
-            state = games[addr].play_turn(guess)
-            print(games[addr].state, state)
+            games[addr].play_turn(guess)
             send_client(conn, games[addr])
          else:
-            print('here1')
-            games[addr] = GameState("words.txt")
+            word_idx = ord(conn.recv(1))
+            if(word_idx == -1):
+               games[addr] = GameState("words.txt")
+            else:
+               games[addr] = GameState("words.txt", word_num=word_idx)
             send_client(conn, games[addr])
 
-         print(addr)
-         print(data_len)
-
-         status = None
-   # Establish connection with client.
 while True:
    conn, addr = s.accept()  
-   print("COUNT: ", threading.active_count())
+   num_clients = threading.active_count()-1
+   if(num_clients == 3):
+      send_client_msg(conn, "Server Overload!")
    threading.Thread(target=handleClient, args=(conn, addr)).start()
-
-   
-   # if(addr in games):
-   #    game = games[addr]
-   #    status = game.play_turn(data)
-   #    str_state = ''.join(game.state)
-   #    send_data = bytes(str(status) + str_state, encoding='utf-8')
-   #    print('sent again')
-   #    conn.sendall(send_data)
-   # else:
-   #    if(data == 'y'):
-   #       print('y here')
-   #       gs = GameState('words.txt',1)
-   #       games[addr] = gs
-   #       str_state = ''.join(gs.state)
-   #       conn.sendall(bytes(str(GameStatus.GAME_START) + str_state, encoding='utf-8'))
-   #    else:
-   #       print("nah")
-   #       conn.sendall(b'uhh nothing')
-
-   # conn.send(b'Thank you for connecting')
-   # c.close()                # Close the connection

@@ -22,29 +22,30 @@ def send_server(data):
         sys.exit(0)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    letters_guessed = {}
+    letters_guessed = set()
     s.connect((HOST, PORT))
     letter = input("Ready to start the game? (y/n):")
-    send_server(chr(0))
+    if(letter == 'n'):
+        print("Ok! Goodbye!")
+        quit()
+    if(letter == 'y'):
+        send_server(chr(0) + chr(-1))
+    else:
+        send_server(chr(0) + chr(int(letter)))
     while(True):
         letter = input("Letter to guess: ")
-        if len(letter) > 0:
+        if len(letter) > 1:
             print("Error! Please guess ONE letter. ")
-            s.close()
-            sys.exit(0)
+            continue
         if not letter.isalpha():
             print("Error! Please guess one LETTER. ")
-            s.close()
-            sys.exit(0)
+            continue
         letter = chr(ord(letter))
-        letter_in_set = letter in letters_guessed
-        if letter_in_set == False:
+        if letter in letters_guessed:
             print("Error! Letter " + letter + " has been guessed before, please guess another letter.")
-            s.close()
-            sys.exit(0)
+            continue
         else:
             letters_guessed.add(letter)
-        letters_guessed.add(letter)
         send_server(chr(1) + letter)
    
     # print("next")
