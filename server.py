@@ -3,6 +3,8 @@
 import socket               # Import socket module
 from game import *
 import struct
+import threading
+import sys 
 
 def send_client(conn, game_state):
    send_msg = ""
@@ -32,37 +34,41 @@ def send_client(conn, game_state):
 games = dict()
 s = socket.socket()         # Create a socket object`
 host = socket.gethostname() # Get local machine name
-port = 8080                # Reserve a port for your service.
+port = 8080                 # Reserve a port for your service.
 s.bind((host, port))        # Bind to the port
 
 s.listen(5)                 # Now wait for client connection.
 
-conn, addr = s.accept()     # Establish connection with client.
+def handleClient(conn, addr):
+   while True:
+         # print('Got connection from', addr)
+         d = conn.recv(1)
+         if(d == b''):
+            conn.close()
+            break
+         print(d)
+         data_len = ord(d)
+         print(data_len)
+         if(data_len > 0):
+            guess = conn.recv(data_len).decode('utf-8')
+            print("GUESS",guess)
+            state = games[addr].play_turn(guess)
+            print(games[addr].state, state)
+            send_client(conn, games[addr])
+         else:
+            print('here1')
+            games[addr] = GameState("words.txt")
+            send_client(conn, games[addr])
+
+         print(addr)
+         print(data_len)
+
+         status = None
+   # Establish connection with client.
 while True:
-
-   # print('Got connection from', addr)
-   d = conn.recv(1)
-   if(d == b''):
-      conn.close()
-      break
-   print(d)
-   data_len = ord(d)
-   print(data_len)
-   if(data_len > 0):
-      guess = conn.recv(data_len).decode('utf-8')
-      print("GUESS",guess)
-      state = games[addr].play_turn(guess)
-      print(games[addr].state, state)
-      send_client(conn, games[addr])
-   else:
-      print('here1')
-      games[addr] = GameState("words.txt")
-      send_client(conn, games[addr])
-
-   print(addr)
-   print(data_len)
-
-   status = None
+   conn, addr = s.accept()  
+   print("COUNT: ", threading.active_count())
+   threading.Thread(target=handleClient, args=(conn, addr)).start()
 
    
    # if(addr in games):
