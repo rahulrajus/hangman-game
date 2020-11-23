@@ -63,4 +63,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # s.sendall(b'1z')
     # data = s.recv(9).decode('utf-8')
     # print(data)
-
