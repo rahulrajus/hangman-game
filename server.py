@@ -6,16 +6,27 @@ import struct
 
 def send_client(conn, game_state):
    send_msg = ""
-   if(game_state == GameStatus.GAME_OUT_OF_GUESSES):
+   print("sent")
+   status = game_state.status
+   if(status == GameStatus.GAME_OUT_OF_GUESSES):
       msg = "You Lost!"
       flag = chr(len(msg))
       send_msg = bytes(flag+msg, encoding='utf-8')
+      print("out",send_msg)
+   elif(status == GameStatus.GAME_WON):
+      msg = "You Won!"
+      flag = chr(len(msg))
+      print(flag+msg)
+      send_msg = bytes(flag+msg, encoding='utf-8')
+      print("won",send_msg)
    else:
+      print('here2')
       word_state = ''.join(game_state.state)
       incorrect_guesses = ''.join(game_state.incorrect_guesses)
       word_len = chr(len(word_state))
       num_incorrect = chr(len(incorrect_guesses))
       send_msg = bytes(chr(0) + word_len + num_incorrect + word_state + incorrect_guesses, encoding='utf-8')
+   print(send_msg)
    conn.sendall(send_msg)   
 
 games = dict()
@@ -27,10 +38,16 @@ s.bind((host, port))        # Bind to the port
 s.listen(5)                 # Now wait for client connection.
 
 conn, addr = s.accept()     # Establish connection with client.
-
 while True:
-   print('Got connection from', addr)
-   data_len = ord(conn.recv(1))
+
+   # print('Got connection from', addr)
+   d = conn.recv(1)
+   if(d == b''):
+      conn.close()
+      break
+   print(d)
+   data_len = ord(d)
+   print(data_len)
    if(data_len > 0):
       guess = conn.recv(data_len).decode('utf-8')
       print("GUESS",guess)
@@ -38,6 +55,7 @@ while True:
       print(games[addr].state, state)
       send_client(conn, games[addr])
    else:
+      print('here1')
       games[addr] = GameState("words.txt")
       send_client(conn, games[addr])
 

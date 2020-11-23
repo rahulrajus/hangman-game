@@ -19,6 +19,7 @@ class GameState:
         self.incorrect_guesses = list()
         self.previous_guesses = set()
         self.MAX_GUESSES = 6
+        self.status = GameStatus.GAME_START
     
     def play_turn(self, letter):
         '''
@@ -26,12 +27,16 @@ class GameState:
         Output: boolean, msg
         '''
         letter = letter.lower()
+        
         if(not letter.isalpha()):
+            self.status = GameStatus.GAME_INVALID_GUESS
             return GameStatus.GAME_INVALID_GUESS
         if(len(self.incorrect_guesses) == self.MAX_GUESSES):
+            self.status = GameStatus.GAME_OUT_OF_GUESSES
             return GameStatus.GAME_OUT_OF_GUESSES
 
         if(letter in self.previous_guesses):
+            self.status = GameStatus.GAME_REPEAT_GUESS
             return GameStatus.GAME_REPEAT_GUESS
 
         self.previous_guesses.add(letter)
@@ -42,9 +47,12 @@ class GameState:
                 found = True
         if(not found):
             self.incorrect_guesses.append(letter)
+            self.status = GameStatus.GAME_INCORRECT_GUESS
             return GameStatus.GAME_INCORRECT_GUESS
         if("".join(self.state) == self.word):
+            self.status = GameStatus.GAME_WON
             return GameStatus.GAME_WON
+        self.status = GameStatus.GAME_INCOMPLETE
         return GameStatus.GAME_INCOMPLETE
 
 class Game:

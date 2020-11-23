@@ -5,7 +5,9 @@ PORT = 8080        # The port used by the server
 
 def send_server(data):
     s.sendall(bytes(data, encoding='utf-8'))
-    len_data = ord(s.recv(1))
+    d = s.recv(1)
+    print(d)
+    len_data = ord(d)
     if(len_data == 0):
         len_word = ord(s.recv(1))
         len_incorrect = ord(s.recv(1))
@@ -19,6 +21,7 @@ def send_server(data):
     else:
         word_data = s.recv(len_data).decode('utf-8')
         print(word_data)
+        s.close()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
@@ -29,6 +32,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     send_server(chr(1) + 't')
     time.sleep(1)
     send_server(chr(1) + 'z')
+    time.sleep(1)
+    send_server(chr(1) + 'a')
+    time.sleep(1)
+    s.close()
 
     # print("next")
     # s.sendall(b'1j')
