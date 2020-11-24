@@ -16,11 +16,11 @@ def send_client(conn, game_state):
    send_msg = ""
    status = game_state.status
    if(status == GameStatus.GAME_OUT_OF_GUESSES):
-      msg = "You Lost!"
+      msg = "You Lose: " + game_state.word
       flag = chr(len(msg))
       send_msg = bytes(flag+msg, encoding='utf-8')
    elif(status == GameStatus.GAME_WON):
-      msg = "You Won!"
+      msg = "You Won! "
       flag = chr(len(msg))
       send_msg = bytes(flag+msg, encoding='utf-8')
    elif(status == GameStatus.GAME_SERVER_OVERLOAD):
@@ -55,10 +55,15 @@ def handleClient(conn, addr):
             games[addr].play_turn(guess)
             send_client(conn, games[addr])
          else:
-            word_idx = ord(conn.recv(1))
-            if(word_idx == -1):
-               games[addr] = GameState("words.txt")
+            word_idx = ord(conn.recv(1)) 
+            if word_idx == 0:
+               nextIdx = ord(conn.recv(1)) 
+               if nextIdx == 0:
+                  games[addr] = GameState("words.txt",rand=True)
+               else:
+                  games[addr] = GameState("words.txt", word_num=word_idx)
             else:
+               nextIdx = ord(conn.recv(1)) 
                games[addr] = GameState("words.txt", word_num=word_idx)
             send_client(conn, games[addr])
 

@@ -29,9 +29,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Ok! Goodbye!")
         quit()
     if(letter == 'y'):
-        send_server(chr(0) + chr(-1))
+        send_server(chr(0) + chr(0) + chr(0))
     else:
-        send_server(chr(0) + chr(int(letter)))
+        send_server(chr(0) + chr(int(letter)) + chr(1))
     while(True):
         letter = input("Letter to guess: ")
         if len(letter) > 1:
@@ -47,19 +47,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         else:
             letters_guessed.add(letter)
         send_server(chr(1) + letter)
-   
-    # print("next")
-    # s.sendall(b'1j')
-    # data = s.recv(9).decode('utf-8')
-    # print(data)
-    # time.sleep(1)
-    # print("next")
-    # s.sendall(b'1t')
-    # data = s.recv(9).decode('utf-8')
-    # print(data)
-
-    # time.sleep(1)
-    # print("next")
-    # s.sendall(b'1z')
-    # data = s.recv(9).decode('utf-8')
-    # print(data)

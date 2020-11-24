@@ -1,5 +1,6 @@
 from read_words import read_words
 from enum import Enum
+import random
 
 class GameStatus(Enum):
     GAME_SERVER_OVERLOAD = 0
@@ -13,8 +14,11 @@ class GameStatus(Enum):
     GAME_OUT_OF_GUESSES = 8
 
 class GameState:
-    def __init__(self, words_file, word_num=0):
+    def __init__(self, words_file, word_num=0, rand=False):
         words = read_words(words_file)
+        if rand:
+            randomInteger = random.Random()
+            word_num = randomInteger.randint(0, len(words) - 1)
         self.word = words[word_num]
         self.state = ['_']*len(self.word)
         self.incorrect_guesses = list()
@@ -85,11 +89,3 @@ class Game:
             elif(res == GameStatus.GAME_OUT_OF_GUESSES):
                 print("You ran out of guesses :(")
                 break       
-
-    
-
-
-
-    
-
-        
