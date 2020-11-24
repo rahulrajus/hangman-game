@@ -1,0 +1,3 @@
+(base) MacBook-Pro-12:hangman-game vamsi$ python3 server.py
+Connected from client_ip:8080
+Ended the connection from client_ip:8080

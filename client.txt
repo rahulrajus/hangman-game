@@ -1,0 +1,22 @@
+(base) MacBook-Pro-12:hangman-game vamsi$ python3 client.py
+Ready to start the game? (y/n):0
+_ _ _ _
+Incorrect Guesses:  
+Letter to guess: b
+_ _ _ _
+Incorrect Guesses:  B
+Letter to guess: j
+j _ _ _
+Incorrect Guesses:  B
+Letter to guess: j
+Error! Letter j has been guessed before, please guess another letter.
+Letter to guess: ju
+Error! Please guess ONE letter. 
+Letter to guess: ?
+Error! Please guess one LETTER. 
+Letter to guess: a
+j a _ _
+Incorrect Guesses:  B
+Letter to guess: z
+You Won! 
+Ended the connection with server at port 8080

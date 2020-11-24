@@ -48,6 +48,7 @@ def handleClient(conn, addr):
          d = conn.recv(1)
          if(d == b''):
             conn.close()
+            print("Ended the connection from client_ip:8080")
             break
          data_len = ord(d)
          if(data_len > 0):
@@ -69,6 +70,7 @@ def handleClient(conn, addr):
 
 while True:
    conn, addr = s.accept()  
+   print("Connected from client_ip:8080")
    num_clients = threading.active_count()-1
    if(num_clients == 3):
       send_client_msg(conn, "Server Overload!")

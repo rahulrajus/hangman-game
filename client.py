@@ -19,6 +19,7 @@ def send_server(data):
         word_data = s.recv(len_data).decode('utf-8')
         print(word_data)
         s.close()
+        print("Ended the connection with server at port 8080")
         sys.exit(0)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
